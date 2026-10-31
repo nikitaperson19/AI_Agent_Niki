@@ -1,0 +1,14 @@
+{
+  "mcp": {
+    "servers": {
+      "jira": {
+        "type": "remote",
+        "url": "https://mcp.atlassian.com/v1/mcp"
+      },
+      "confluence": {
+        "type": "remote",
+        "url": "https://mcp.atlassian.com/v1/mcp"
+      }
+    }
+  }
+}
