@@ -65,9 +65,21 @@ mode: subagent
 # Artifact
 
 ## Artifact Storage
-- Артефакт должен быть записан в файл по пути: `./artifacts/jira-tasks/<version>.md`
-- Первая версия — `v1.md`, при обновлениях — `v2.md`, `v3.md` и т.д.
+
+**ФИКСИРОВАННЫЙ ПУТЬ ЗАПИСИ:**
+
+- Точный путь: `/artifacts/jira-tasks/v{N}.md`
+- Первая версия: `/artifacts/jira-tasks/v1.md`
+- При обновлениях: `/artifacts/jira-tasks/v2.md`, `/artifacts/jira-tasks/v3.md` и т.д.
+
+**ЗАПИСЬ ЗАПРЕЩЕНА:**
+- ❌ `/artifacts/jira_tasks.md` (flat-файл)
+- ❌ Любые другие пути, кроме указанного выше
+
+**ПРАВИЛА:**
 - Старые версии не удалять.
+- Не редактировать уже существующие файлы.
+- Записывать результаты только в новые файлы с увеличенным номером версии.
 
 ## Jira Tasks Artifact
 

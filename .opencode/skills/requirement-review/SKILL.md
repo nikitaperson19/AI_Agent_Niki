@@ -111,10 +111,29 @@ Skill выполняет систематическое ревью требов�
 | Параметр | Значение |
 |----------|----------|
 | **Producer** | Skill `requirement-review` |
-| **Consumers** | Skill `task-design`, Skill `test-design` |
+| **Consumers** | QA-orchestrator (для вызова task-design и test-design) |
 | **Artifact** | Requirement Review |
-| **Validation** | Completion Criteria этого Skill |
+| **Validation** | Completion Criteria этого Skill + Requirement Review Gate Decision Matrix |
 | **Error Handling** | Если обязательный вход отсутствует или критическая неоднозначность не позволяет сформировать надёжный Artifact — верни невалидный/заблокированный результат с описанием причины, а **не заполняй** пробелы предположениями. |
+
+### Gate Status (указать в Artifact)
+
+Producer должен явно указать статус Gate в конце Artifact:
+
+| Статус | Когда устанавливать | Что означает для QA-orchestrator |
+|--------|---------------------|----------------------------------|
+| **PASSED** | Все Completion Criteria выполнены; Ambiguities, Conflicts, Missing Information обработаны; нет выдуманных требований. | Orchestrator может запустить task-design и test-design. |
+| **FAILED** | Artifact не создан; после 2 циклов Self-Refine не соответствует Completion Criteria; обнаружены выдуманные требования; требования из Confluence недоступны. | Orchестратор должен остановить зависимые этапы со статусом `FAILED`. |
+| **REQUIRES_HUMAN_DECISION** | Есть неразрешённые критические конфликты, критическая Missing Information или неоднозначности, влияющие на дизайн. | Orchестратор должен остановить зависимые этапы, эскалировать и сохранить частичный результат. |
+
+### Partial Coverage (если применимо)
+
+Если проанализирована не вся функциональность (например, часть требований получена, часть — нет):
+
+- Указать в Artifact, **какие требования покрыты**, а какие — нет.
+- Установить статус `REQUIRES_HUMAN_DECISION`.
+- Для каждой непокрытой требования указать причину и что требуется для анализа.
+- QA-orchестратор может запустить task-design и test-design **только для покрытых требований**.
 
 ---
 

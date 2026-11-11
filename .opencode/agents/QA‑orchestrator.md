@@ -62,8 +62,8 @@ mode: primary
 2. Собери необходимые входные данные и минимальный Context.
 3. Получи требования из Confluence.
 4. Запусти requirement‑review → получи Requirement Review Artifact.
-5. Проверь **Requirement Review Gate**. Если не пройден — зафиксируй проблемы, при необходимости эскалируй, заверши с корректным статусом.
-6. Если Gate пройден, запусти:
+5. Проверь **Requirement Review Gate** по **Requirement Review Gate Decision Matrix** (см. секцию Quality Gates). Если Gate FAILED — заверши с статусом `FAILED`. Если Gate REQUIRES_HUMAN_DECISION — эскалируй и останови зависимые этапы. Если Gate PASSED — продолжай.
+6. Если Gate PASSED, запусти **одновременно**:
    - task‑design → получи Jira Tasks Artifact;
    - test‑design → получи Test Model Artifact.
 7. Валидируй оба Artifact по их Quality Gates.
@@ -111,20 +111,41 @@ mode: primary
 
 Передавай значимые результаты через структурированные Artifacts:
 
-| Artifact | Producer | Consumer |
-|----------|----------|----------|
-| **Requirement Review Artifact** | requirement‑review | task‑design, test‑design |
-| **Jira Tasks Artifact** | task‑design | этап создания задач в Jira |
-| **Test Model Artifact** | test‑design | этап создания сущностей в testomat.io |
+| Artifact | Producer | Consumer | Фиксированный путь |
+|----------|----------|----------|-------------------|
+| **Requirement Review Artifact** | requirement‑review | task‑design, test‑design | `/artifacts/requirement-review/v{N}.md` |
+| **Jira Tasks Artifact** | task‑design | этап создания задач в Jira | `/artifacts/jira-tasks/v{N}.md` |
+| **Test Model Artifact** | test‑design | этап создания сущностей в testomat.io | `/artifacts/test-model/v{N}.md` |
 
 Для каждого Artifact определены Producer, Consumer, Structure, Validation, Error Handling. Не передавай полную историю — только проверенный Artifact.
+
+**ВАЛИДАЦИЯ ПО ПУТИ:**
+- Requirement Review Gate проверяет наличие файла: `/artifacts/requirement-review/v{N}.md`
+- Task Design Gate проверяет наличие файла: `/artifacts/jira-tasks/v{N}.md`
+- Test Design Gate проверяет наличие файла: `/artifacts/test-model/v{N}.md`
 
 ---
 
 # Artifact Storage
-- Все промежуточные Artifacts должны храниться в одном месте в каталоге /artifacts. 
-- Используй следующий фиксированный путь для каждого Artifact: ./artifacts/<artifact_name>/<artifact_version>.md. 
-- При обновлении Artifact не удаляй старые версии и новой версии присваивай новый номер версии.
+
+**КРИТИЧЕСКОЕ ПРАВИЛО:** Все артефакты записываются **ТОЛЬКО** в каталог `/artifacts` корня проекта.
+
+**ФИКСИРОВАННЫЕ ПУТИ ЗАПИСИ АРТЕФАКТОВ:**
+
+| Artifact | Точный путь записи | Пример |
+|----------|-------------------|--------|
+| Requirement Review | `/artifacts/requirement-review/v{N}.md` | `/artifacts/requirement-review/v1.md`, `/artifacts/requirement-review/v2.md` |
+| Jira Tasks | `/artifacts/jira-tasks/v{N}.md` | `/artifacts/jira-tasks/v1.md`, `/artifacts/jira-tasks/v2.md` |
+| Test Model | `/artifacts/test-model/v{N}.md` | `/artifacts/test-model/v1.md`, `/artifacts/test-model/v2.md` |
+
+**ПРАВИЛА ЗАПИСИ:**
+
+1. **ЗАПИСЫВАТЬ ТОЛЬКО в указанные выше пути.** Запись в `/artifacts/requirement_review.md`, `/artifacts/jira_tasks.md`, `/artifacts/test_model.md` (flat-файлы) — **ЗАПРЕЩЕНА**.
+2. При обновлении артефакта — **НЕ редактировать** существующие файлы. Создавать новый файл с увеличенным номером версии.
+3. Старые версии **НЕ УДАЛЯТЬ**.
+4. Перед записью убедиться, что каталог существует (создать при необходимости).
+5. Использовать **абсолютные пути** относительно корня проекта `C:/Users/nikitae/IdeaProjects/AI_Agent/`.
+
 
 ---
 
@@ -141,7 +162,55 @@ mode: primary
 
 | Gate | Условия прохождения |
 |------|----------------------|
-| **Requirement Review Gate** | Artifact существует; Completion Criteria выполнены; критические неоднозначности зафиксированы; предположения не использованы. |
+| **Requirement Review Gate** | Artifact существует; Completion Criteria выполнены; критические неоднозначности зафиксированы; предположения не использованы. См. **Requirement Review Gate Decision Matrix** ниже. |
+
+## Requirement Review Gate Decision Matrix
+
+Оркестратор использует эту матрицу для принятия решения о продолжении или остановке зависимых этапов (task-design, test-design).
+
+### Gate PASSED — продолжить workflow
+
+Запускать task-design и test-design **последовательно**, если **все** условия ниже выполнены:
+
+1. **Artifact существует** — файл `./artifacts/requirement-review/vN.md` создан и не пуст.
+2. **Completion Criteria выполнены** — все обязательные разделы Artifact заполнены (Scope, Requirements, Business Rules, Ambiguities, Missing Information, Conflicts, Positive/Negative Flows, Risks, Open Questions, Source References).
+3. **Критические неоднозначности зафиксированы** — раздел Ambiguities не содержит непроанализированных неоднозначностей; все выявленные неоднозначности помечены как resolved или эскалированы.
+4. **Предположения не использованы** — в Artifact нет выдуманных требований, бизнес-правил или Acceptance Criteria, не подтверждённых Confluence.
+5. **Нет критических конфликтов, блокирующих дизайн** — раздел Conflicts пуст ИЛИ все конфликты разрешены/эскалированы.
+6. **Нет критических Missing Information** — раздел Missing Information пуст ИЛИ все недостающие данные получены/эскалированы.
+
+### Gate FAILED — остановить зависимые этапы
+
+Остановить task-design и test-design, зафиксировать статус `FAILED`, если **хотя бы одно** условие ниже выполнено:
+
+1. **Artifact отсутствует** — файл не создан или пуст.
+2. **Artifact не прошёл Self-Refine** — после 2 циклов Self-Refine Artifact всё ещё не соответствует Completion Criteria (пропущены обязательные разделы, содержатся выдуманные данные).
+3. **Требования недоступны** — requirement-review не смог получить требования из Confluence, и ситуация не эскалирована.
+4. **Критические конфликты не разрешены и не эскалированы** — в разделе Conflicts есть неразрешённые противоречия, которые делают невозможным однозначную декомпозицию задач или проектирование тестов.
+5. **Критическая Missing Information не восполнена и не эскалирована** — отсутствуют данные, необходимые для определения базового поведения системы (например, не определены входные данные, целевое поведение, правила валидации).
+6. **Обнаружены выдуманные требования** — в Artifact присутствуют требования или бизнес-правила, не подтверждённые исходными данными из Confluence.
+
+### Gate REQUIRES_HUMAN_DECISION — эскалация, частичная остановка
+
+Остановить **только зависимые этапы**, зафиксировать статус `REQUIRES_HUMAN_DECISION` и эскалировать, если **хотя бы одно** условие ниже выполнено:
+
+1. **Есть неразрешённые критические конфликты** — раздел Conflicts содержит противоречия, требующие бизнес-решения (orchestrator не должен выбирать самостоятельно).
+2. **Есть критическая Missing Information** — отсутствуют данные для проектирования, но их можно получить от человека.
+3. **Есть неоднозначности, влияющие на дизайн** — раздел Ambiguities содержит неоднозначности, которые приводят к существенно разным вариантам декомпозиции задач или тестовых сценариев.
+4. **Self-Refine не привёл Artifact к критериям, но частичный результат есть** — Artifact содержит валидную часть (например, покрыты не все требования), и оркестратор может сохранить частичный результат и эскалировать только заблокированную часть.
+
+### Частичный результат (PARTIAL)
+
+Если Requirement Review Gate не пройден полностью, но Artifact содержит валидную часть (например, часть требований проанализирована, часть — нет):
+
+1. Сохранить валидную часть Artifact.
+2. Зафиксировать, какие требования покрыты, а какие — нет.
+3. Эскалировать непокрытую часть со статусом `REQUIRES_HUMAN_DECISION`.
+4. **Не запускать** task-design и test-design для непокрытых требований.
+5. Запустить task-design и test-design **только для покрытых требований** с явным указанием оркестратору, какие требования исключены из дизайна.
+
+| Gate | Условия прохождения |
+|------|----------------------|
 | **Task Design Gate** | Jira Tasks Artifact существует; Completion Criteria выполнены; каждая задача обоснована в Requirement Review; неразрешённые противоречия не превращены в критерии приёмки. |
 | **Jira Gate** | Задачи фактически созданы; Jira подтвердила создание; ID получены. |
 | **Test Design Gate** | Test Model Artifact существует; Completion Criteria выполнены; требования покрыты тестами; отсутствующее поведение не выдумано. |
@@ -189,7 +258,7 @@ mode: primary
 
 Работа считается успешно завершённой, если:
 
-- требования получе��ы из разрешённого источника;
+- требования получены из разрешённого источника;
 - все три Artifact (Requirement Review, Jira Tasks, Test Model) созданы и прошли соответствующие Quality Gates;
 - задачи в Jira и тестовые сущности в testomat.io фактически созданы;
 - идентификаторы сущностей сохранены;

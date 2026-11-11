@@ -1,0 +1,149 @@
+{
+  "status": "PARTIAL",
+  "source": {
+    "page_id": "7733249",
+    "title": "Неоднозначность в требованиях",
+    "version": 1,
+    "read_status": "success"
+  },
+  "quality_gate": {
+    "requirement_review_gate": {
+      "verdict": "PASSED",
+      "blocking_items": []
+    },
+    "task_design_gate": {
+      "verdict": "PASSED",
+      "blocking_items": []
+    },
+    "test_design_gate": {
+      "verdict": "PASSED",
+      "blocking_items": []
+    },
+    "jira_gate": {
+      "verdict": "PASSED",
+      "blocking_items": [],
+      "created_count": 3
+    },
+    "testomat_gate": {
+      "verdict": "PASSED",
+      "blocking_items": [],
+      "created_count": 23
+    },
+    "final_gate": {
+      "verdict": "PARTIAL",
+      "reasoning": "Все артефакты созданы и прошли валидацию, задачи и тестовые сущности созданы. Однако требования содержат критические неоднозначности (8 шт.) и отсутствующую информацию (9 пунктов), которые требуют участия владельца требований для однозначного определения лимитов и поведения. Статус PARTIAL — работа выполнена частично, требуется эскалация."
+    }
+  },
+  "jira": {
+    "project": "SCRUM (Test_AI)",
+    "created": ["SCRUM-106", "SCRUM-107", "SCRUM-108"],
+    "tasks": [
+      {
+        "key": "SCRUM-106",
+        "summary": "Реализовать выбор файлов через проводник и Drag-and-Drop",
+        "status": "created"
+      },
+      {
+        "key": "SCRUM-107",
+        "summary": "Реализовать вставку файлов из буфера обмена (Ctrl+V / Cmd+V)",
+        "status": "created"
+      },
+      {
+        "key": "SCRUM-108",
+        "summary": "Реализовать валидацию загружаемых файлов (формат, размер, количество)",
+        "status": "created"
+      }
+    ]
+  },
+  "testomat": {
+    "project": "For_Agent (for_agent)",
+    "suites_created": [
+      {"id": "5edecc5d", "title": "File Upload - Positive Scenarios"},
+      {"id": "dbc96d94", "title": "File Upload - Negative Scenarios"},
+      {"id": "f7b01890", "title": "File Upload - Boundary Scenarios"},
+      {"id": "0a920c50", "title": "File Upload - Risk-based Scenarios"}
+    ],
+    "tests_created": [
+      {"id": "052d28a2", "title": "Выбор одного файла через проводник", "suite": "Positive"},
+      {"id": "e1e44605", "title": "Выбор нескольких файлов через проводник (multiselect)", "suite": "Positive"},
+      {"id": "33443d73", "title": "Drag-and-Drop одного файла", "suite": "Positive"},
+      {"id": "be8e451b", "title": "Drag-and-Drop нескольких файлов", "suite": "Positive"},
+      {"id": "b408782d", "title": "Вставка файла через Ctrl+V (изображение)", "suite": "Positive"},
+      {"id": "8cd16cd4", "title": "Загрузка файла с расширением в верхнем регистре (.PDF)", "suite": "Positive"},
+      {"id": "4bdd145c", "title": "Загрузка файла с размером, равным лимиту", "suite": "Positive"},
+      {"id": "35520d20", "title": "Загрузка файлов в количестве, равном лимиту", "suite": "Positive"},
+      {"id": "ea1ffb94", "title": "Выбор файла с неподдерживаемым расширением через проводник", "suite": "Negative"},
+      {"id": "4208bb87", "title": "Drag-and-Drop файла с неподдерживаемым расширением", "suite": "Negative"},
+      {"id": "a64d6f92", "title": "Загрузка файла, превышающего максимальный размер", "suite": "Negative"},
+      {"id": "03a590f6", "title": "Превышение максимального количества файлов", "suite": "Negative"},
+      {"id": "96f68ab4", "title": "Вставка неподдерживаемого типа файла через Ctrl+V", "suite": "Negative"},
+      {"id": "2a2a2f33", "title": "Загрузка пустого файла (0 байт)", "suite": "Negative"},
+      {"id": "33ee5eef", "title": "Попытка загрузить файл с недопустимыми символами в имени", "suite": "Negative"},
+      {"id": "ba0d5910", "title": "Загрузка файла с размером на 1 байт меньше лимита", "suite": "Boundary"},
+      {"id": "c6730e24", "title": "Загрузка файла с размером на 1 байт больше лимита", "suite": "Boundary"},
+      {"id": "9001eac4", "title": "Drag-and-Drop сброс файла вне зоны", "suite": "Boundary"},
+      {"id": "06264d41", "title": "Количество файлов = лимит - 1", "suite": "Boundary"},
+      {"id": "c59d0546", "title": "Количество файлов = лимит + 1", "suite": "Boundary"},
+      {"id": "7120b6ea", "title": "Одновременное использование нескольких способов добавления файлов", "suite": "Risk-based"},
+      {"id": "ab5e4358", "title": "Быстрое последовательное добавление файлов", "suite": "Risk-based"},
+      {"id": "9b1ebfc0", "title": "Загрузка файла .јрg (кириллица в расширении, гомоглиф)", "suite": "Risk-based"}
+    ]
+  },
+  "artifacts": {
+    "requirement_review": "artifacts/requirement-review/v10.md",
+    "jira_tasks": "artifacts/jira-tasks/v6.md",
+    "test_model": "artifacts/test-model/v6.md"
+  },
+  "open_questions": [
+    {
+      "id": "OQ-01",
+      "question": "Каков точный список разрешённых форматов файлов?",
+      "related_ambiguity": "AMB-01"
+    },
+    {
+      "id": "OQ-02",
+      "question": "Каков точный максимальный размер одного файла (10 МБ или 48 МБ или другое значение)?",
+      "related_ambiguity": "AMB-02"
+    },
+    {
+      "id": "OQ-03",
+      "question": "Каково точное максимальное количество файлов?",
+      "related_ambiguity": "AMB-03"
+    },
+    {
+      "id": "OQ-04",
+      "question": "Ограничение количества — на одну операцию загрузки или на всё время прикрепления к форме?",
+      "related_ambiguity": "AMB-04"
+    },
+    {
+      "id": "OQ-05",
+      "question": "Какие типы файлов можно вставлять через Ctrl+V (только изображения или любые)?",
+      "related_ambiguity": "AMB-05"
+    },
+    {
+      "id": "OQ-06",
+      "question": "Поддерживается ли множественный выбор файлов через проводник?",
+      "related_ambiguity": "AMB-06"
+    },
+    {
+      "id": "OQ-07",
+      "question": "Есть ли ограничение на суммарный размер всех загруженных файлов?",
+      "related_ambiguity": "AMB-08"
+    },
+    {
+      "id": "OQ-08",
+      "question": "Как должны отображаться сообщения об ошибках валидации?",
+      "related_missing_info": "MI-07"
+    },
+    {
+      "id": "OQ-09",
+      "question": "Что должно происходить после успешной загрузки/прикрепления файлов?",
+      "related_missing_info": "MI-08"
+    }
+  ],
+  "errors": [],
+  "blockers": [
+    "Неопределённые значения лимитов (форматы, размер, количество) — задачи и тесты созданы с пометками BLOCKED/REQUIRES_HUMAN_DECISION, требуется решение владельца требований.",
+    "Неопределённое поведение Paste-функциональности (какие типы файлов поддерживаются)."
+  ]
+}

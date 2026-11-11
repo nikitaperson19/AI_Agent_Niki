@@ -67,9 +67,21 @@ mode: subagent
 # Artifact
 
 ## Artifact Storage
-- Артефакт должен быть записан в файл по пути: `./artifacts/test-model/<version>.md`
-- Первая версия — `v1.md`, при обновлениях — `v2.md`, `v3.md` и т.д.
+
+**ФИКСИРОВАННЫЙ ПУТЬ ЗАПИСИ:**
+
+- Точный путь: `/artifacts/test-model/v{N}.md`
+- Первая версия: `/artifacts/test-model/v1.md`
+- При обновлениях: `/artifacts/test-model/v2.md`, `/artifacts/test-model/v3.md` и т.д.
+
+**ЗАПИСЬ ЗАПРЕЩЕНА:**
+- ❌ `/artifacts/test_model.md` (flat-файл)
+- ❌ Любые другие пути, кроме указанного выше
+
+**ПРАВИЛА:**
 - Старые версии не удалять.
+- Не редактировать уже существующие файлы.
+- Записывать результаты только в новые файлы с увеличенным номером версии.
 
 ## Test Model Artifact
 
