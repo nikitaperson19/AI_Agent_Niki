@@ -67,6 +67,15 @@ Skill преобразует проверенный **Requirement Review** в с
 - **Не вызывай Jira Tool.**
 - **Не изменяй существующие Jira-задачи.**
 
+### Duplicate Detection Rules (Skill-level)
+
+При наличии информации о существующих задачах (переданной QA-orchestrатором):
+
+1. **Exact match:** если Summary candidate-задачи совпадает с Summary существующей задачи → дубликат.
+2. **Requirement overlap:** если candidate и существующая задача покрывают те же Source Requirements (по Links/Labels) → дубликат.
+3. **Merge opportunity:** если candidate покрывает ту же функциональность, но с дополнительными аспектами → объединить в одну задачу, а не создавать дубликат.
+4. **False positive:** если candidate покрывает ту же функциональность, но с другими Acceptance Criteria или требованиями → не дубликат, отдельная задача.
+
 ---
 
 ## Reasoning Patterns

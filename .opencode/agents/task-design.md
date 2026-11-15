@@ -55,8 +55,8 @@ mode: subagent
 2. Проверь, что Artifact прошёл Quality Gate (если нет — останови этап, зафиксируй проблему).
 3. Декомпозируй требования в атомарные задачи.
 4. Для каждой задачи сформируй: **Name**, **Description**, **Acceptance Criteria**, **Links to Requirements**, **Dependencies**, **Labels/Components**, **Priority** (если определено), **Notes**.
-5. Проверь на очевидное дублирование с существующими задачами.
-6. Сформируй **Jira Tasks Artifact** в структурированном виде (таблица/JSON).
+5. **Duplicate check:** если QA‑orchestrатор передал информацию о существующих задачах — сопоставь candidate-задачи по Name и Links to Requirements. Исключи дубликаты, используй существующие Jira Issue Key.
+6. Сформируй **Jira Tasks Artifact** в структурированном виде (таблица/JSON) с полем **Local ID** для каждой задачи.
 7. Проверь артефакт по Completion Criteria. При необходимости примени Self‑Refine (до 2 циклов).
 8. Передай Artifact QA‑orchestrator. При невозможности привести к критериям — зафиксируй проблему и эскалируй.
 
@@ -87,6 +87,7 @@ mode: subagent
 
 | Поле | Описание |
 |------|----------|
+| **Local ID** | Временный идентификатор задачи (уникален в рамках Artifact) |
 | **Name** | Название задачи |
 | **Description** | Описание задачи |
 | **Acceptance Criteria** | Критерии приёмки |
@@ -95,6 +96,8 @@ mode: subagent
 | **Labels** | Метки / Components |
 | **Priority** | Приоритет (если определено) |
 | **Notes** | Примечания |
+| **External ID** | Jira Issue Key (заполняется QA‑orchestrатором после создания, пусто на этапе проектирования) |
+| **Is Duplicate** | `true` если задача является дубликатом существующей (указать External ID существующей задачи) |
 
 ---
 

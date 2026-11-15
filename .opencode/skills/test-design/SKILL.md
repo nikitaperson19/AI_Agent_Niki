@@ -67,6 +67,15 @@ Skill проектирует **риск-ориентированную тест�
 - **Не вызывай testomat.io Tool.**
 - Не считай Test Model фактически созданной в testomat.io до подтверждения Tool на уровне агента.
 
+### Duplicate Detection Rules (Skill-level)
+
+При наличии информации о существующих тестах (переданной QA-orchestrатором):
+
+1. **Exact match:** если Title candidate-теста совпадает с Title существующего теста → дубликат.
+2. **Steps similarity + same requirements:** если Steps/Test Intent существенно похожи И Linked Requirements совпадают → дубликат.
+3. **Different scope:** если Steps похожи, но Linked Requirements разные → не дубликат (тест покрывает другую функциональность).
+4. **Enhancement opportunity:** если candidate покрывает ту же функциональность, но добавляет новые шаги/ожидаемые результаты → не дубликат, а улучшение существующего теста.
+
 ---
 
 ## Reasoning Patterns
